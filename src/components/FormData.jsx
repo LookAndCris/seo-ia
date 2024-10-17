@@ -10,9 +10,9 @@ export function FormData() {
   const [showExcelDownloader, setShowExcelDownloader] = useState(false); // Estado para controlar la visibilidad del componente
   
   // Context Data
-  const { data, saveData, saveIndexes, sample, saveSample } = useData();
+  const { data, saveData, sample, saveSample } = useData();
   // Use Processing
-  const { sampleProcessing, indexesArray } = useProcessing();
+  const { sampleProcessing } = useProcessing();
 
   // Loading State Sample
   const onChange = async (event) => {
@@ -30,7 +30,6 @@ export function FormData() {
       const headerExcel = data[0]; // Header of the Excel
       sample.headerExcel = headerExcel; // Save the header of the Excel
       const dataSave = await data.slice(1); // Data without the header
-
       await saveData(dataSave);
     } else {
       await saveData(data);
@@ -38,9 +37,6 @@ export function FormData() {
 
     await setHasData(true);
 
-    // Indexes
-    const indexes = await indexesArray(sampleProcessing.N, sampleProcessing.n); // Array of indexes
-    await saveIndexes(indexes);
 
     // Show the ExcelDownloader component
     setShowExcelDownloader(true);

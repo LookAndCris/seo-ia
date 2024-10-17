@@ -39,7 +39,6 @@ export const ProcessingProvider = ({ children }) => {
     return <ProcessingContext.Provider value={{
         sampleProcessing,
         saveSampleProcessing,
-        indexesArray
     }}>{children}</ProcessingContext.Provider>;
 }
 
