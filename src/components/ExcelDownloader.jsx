@@ -26,7 +26,7 @@ export function ExcelDownloader() {
     <div className="flex justify-center items-center h-full">
       <button
         className="w-1/6 h-12 rounded-lg mx-auto mt-2 text-white"
-        style={{ background: "#EE2B7B" }}
+        style={{ background: "#93166F" }}
         onClick={handleExportClick}
       >
         Exportar Excel

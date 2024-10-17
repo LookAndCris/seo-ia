@@ -57,8 +57,8 @@ export function FormData() {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                 style={{ borderBottomColor: "#EE2B7B" }}
                 type="text"
-                value={sample.auditoria}
-                name="auditoria"
+                value={sample.keyword}
+                name="keyword"
                 onChange={onChange}
               />
             </label>
@@ -69,20 +69,8 @@ export function FormData() {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                 style={{ borderBottomColor: "#EE2B7B" }}
                 type="text"
-                value={sample.prueba}
-                name="prueba"
-                onChange={onChange}
-              />
-            </label>
-
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Mesa:
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
-                style={{ borderBottomColor: "#EE2B7B" }}
-                type="text"
-                value={sample.nombre}
-                name="nombre"
+                value={sample.tema}
+                name="tema"
                 onChange={onChange}
               />
             </label>
@@ -92,25 +80,39 @@ export function FormData() {
               <textarea
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                 style={{ borderBottomColor: "#EE2B7B" }}
-                value={sample.descripcion}
-                name="descripcion"
+                value={sample.enfoque}
+                name="enfoque"
                 onChange={(event) => {
                   const inputValue = event.target.value;
-                  if (inputValue.length <= 80) {
+                  if (inputValue.length <= 200) {
                     onChange(event);
                   }
                 }}
-                rows="2"
+                rows="3"
               ></textarea>
             </label>
+
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Databases:
+              Mesa:
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
                 style={{ borderBottomColor: "#EE2B7B" }}
                 type="text"
-                value={sample.prueba}
-                name="prueba"
+                value={sample.mesa}
+                name="mesa"
+                onChange={onChange}
+              />
+            </label>
+
+           
+            <label className="block text-gray-700 text-sm font-bold mb-2">
+              Audiencias:
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
+                style={{ borderBottomColor: "#EE2B7B" }}
+                type="text"
+                value={sample.audiencias}
+                name="audiencias"
                 onChange={onChange}
               />
             </label>
@@ -119,7 +121,7 @@ export function FormData() {
 
         <button
           className="w-1/6 h-12 rounded-lg mx-auto text-white"
-          style={{ background: "#EE2B7B" }}
+          style={{ background: "#93166F" }}
           type="submit"
         >
           Generar

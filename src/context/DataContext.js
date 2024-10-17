@@ -31,30 +31,18 @@ export const DataProvider = ({ children }) => {
 
     //Object to save the sample
     const [sample, setSample] = useState({
-        fecha: fullDate, //Date of the sample
-        auditoria: '', //Name of the audit
-        periodoInicio: '', //Start date of the audit
-        periodoFin: '', //End date of the audit
-        prueba: '', //Last name of the investigator
-        descripcion: '', //Description of the test
-
-        nombre: '', //Name of the investigator
-        correo: '', //Email of the investigator
-
-        tamanoPoblacion: 0, //Size/universe/population(N)
-        nivelDeConfianza: [], //Confidence level (Z)
-        probabilidadDeExito: 50, //Probability of success (p)
-        probailidadDeFallo: 50, //Probability of failure (q)
-        errorDeEstimacion: 10, //Margin of error ()
+        keyword: '',
+        tema: '',
+        enfoque: '',
+        mesa:'',
+        audiencias: '',  
 
         headerExcel: [], //Header of the excel
         data: [], //Data from the sample
-        indexes: [], //Indexes of the data
     });
 
     //Save the data of the sample
     sample.data = data
-    sample.indexes = indexes
 
     const saveSample = (sample) => {
         setSample(sample);
@@ -63,8 +51,6 @@ export const DataProvider = ({ children }) => {
     return <DataContext.Provider value={{
         data,
         saveData,
-        indexes,
-        saveIndexes,
         sample,
         saveSample
     }}>{children}</DataContext.Provider>;
