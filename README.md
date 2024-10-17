@@ -1,4 +1,3 @@
-## Getting Started
-Simple App # seo-ia
-# seo-ia
-# seo-ia
+# Getting Started
+
+Simple App seo-ia
