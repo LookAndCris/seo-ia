@@ -1,8 +1,10 @@
 'use client'
+import OpenAI from "openai";
 import { useState } from "react";
 import { useData } from "@/context/DataContext";
 import { useProcessing } from "@/context/ProcessingContext";
 import { ExcelDownloader } from "@/components/ExcelDownloader";
+import { parseChatCompletion } from "openai/lib/parser";
 
 export function FormData() {
   // Loading State
@@ -14,6 +16,8 @@ export function FormData() {
   // Use Processing
   const { sampleProcessing, setSampleProcessing } = useProcessing();
 
+  // Keywords generadas
+  let keywords_real = []
   // Loading State Sample
   const onChange = async (event) => {
     event.preventDefault();
@@ -60,6 +64,27 @@ export function FormData() {
       setSampleProcessing(processedSample);
     }
 
+    // Generar prompt usando sampleProcessing
+    const prompt = ` Generame 20 keywords para SEO usando como referencia lo sigueinte: Keyword: ${sampleProcessing.keyword}\nTema: ${sampleProcessing.tema}\nEnfoque: ${sampleProcessing.enfoque}\nMesa: ${sampleProcessing.mesa} } solo dame las palabras separadas por salto de linea`;
+    // Generar respuestas usando sampleProcessing y el modelo gpt-4o-mini
+    const openai = new OpenAI({
+      apiKey: '',
+      dangerouslyAllowBrowser: true,
+    });
+    const chatCompletion = await openai.chat.completions.create({
+      messages: [{ role: "user", content: prompt }],
+      model: "gpt-4o-mini",
+    });
+
+
+    // Separar las palabras generadas por salto de linea
+    const keywords = chatCompletion.choices[0].message.content.split("\n");
+
+    keywords_real = keywords
+
+
+    // Mostrar las palabras generadas en la consola
+    console.log("Palabras generadas:", keywords_real);
 
     // Show the ExcelDownloader component
     setShowExcelDownloader(true);
@@ -147,7 +172,17 @@ export function FormData() {
       </form>
 
       {/* Mostrar el componente ExcelDownloader si showExcelDownloader es true */}
-      {showExcelDownloader && <ExcelDownloader />}
+      {/* {showExcelDownloader && <ExcelDownloader />} */}
+      {/* muestra en pantalla las keywords_real  */}
+      <div>
+        <h1>Keywords generadas:</h1>
+        <ul>
+          {keywords_real.map((keyword, index) => (
+            <li key={index}>{keyword}</li>
+          ))}
+        </ul>
+      </div>
+      
     </section>
   );
 }
