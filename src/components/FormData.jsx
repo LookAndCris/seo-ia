@@ -8,11 +8,11 @@ export function FormData() {
   // Loading State
   const [hasData, setHasData] = useState(false);
   const [showExcelDownloader, setShowExcelDownloader] = useState(false); // Estado para controlar la visibilidad del componente
-  
+
   // Context Data
   const { data, saveData, sample, saveSample } = useData();
   // Use Processing
-  const { sampleProcessing } = useProcessing();
+  const { sampleProcessing, setSampleProcessing } = useProcessing();
 
   // Loading State Sample
   const onChange = async (event) => {
@@ -24,18 +24,41 @@ export function FormData() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Data
-    if (sampleProcessing.N === 0) {
-      // Header
-      const headerExcel = data[0]; // Header of the Excel
-      sample.headerExcel = headerExcel; // Save the header of the Excel
-      const dataSave = await data.slice(1); // Data without the header
-      await saveData(dataSave);
-    } else {
-      await saveData(data);
-    }
+    // Convertir audiencias de la muestra en un array, separando por espacios o comas
+    const processAudiencias = (audiencias) => {
+      return audiencias
+        .split(/[ ,]+/)
+        .filter((item) => item.trim() !== ""); // Eliminar elementos vacíos
+    };
 
-    await setHasData(true);
+    // Si los datos del Excel están cargados, usar esos datos
+    if (data.length > 0) {
+      const excelData = data[1]; // Suponiendo que tomamos el primer conjunto de datos del Excel
+      const processedSample = {
+        keyword: excelData.keyword || "",
+        tema: excelData.tema || "",
+        enfoque: excelData.enfoque || "",
+        mesa: excelData.mesa || "",
+        audiencias: processAudiencias(excelData.audiencias || ""),
+      };
+  
+      console.log("Procesando datos desde el Excel:", processedSample);
+  
+      setSampleProcessing(processedSample);
+    } else {
+      // Si no hay datos cargados desde el Excel, usar los datos del formulario
+      const processedSample = {
+        keyword: sample.keyword,
+        tema: sample.tema,
+        enfoque: sample.enfoque,
+        mesa: sample.mesa,
+        audiencias: processAudiencias(sample.audiencias),
+      };
+  
+      console.log("Procesando datos desde el formulario:", processedSample);
+  
+      setSampleProcessing(processedSample);
+    }
 
 
     // Show the ExcelDownloader component
@@ -100,7 +123,6 @@ export function FormData() {
               />
             </label>
 
-           
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Audiencias:
               <input
