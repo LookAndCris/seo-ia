@@ -11,7 +11,7 @@ export function FormData() {
   // Context Data
   const { data, saveData, sample, saveSample } = useData();
   // Use Processing
-  const { sampleProcessing, setSampleProcessing, getKeywords } = useProcessing();
+  const { sampleProcessing, setSampleProcessing, getKeywords, fetchKeywordData } = useProcessing();
 
   // Keywords generadas
   let keywords_real = [];
@@ -49,6 +49,12 @@ export function FormData() {
       };
 
       console.log("Procesando datos desde el Excel:", processedSample);
+      console.log("Palabras clave generadas:", processedSample.keywords_generated.keywords);
+      console.log("Palabras clave generadas:", processedSample.keywords_generated.keywords.length);
+          // Ejemplo de uso
+          fetchKeywordData(['us', 'uk', 'ca'], ['seo', 'marketing', 'data'])
+          .then(results => console.log(results))
+          .catch(error => console.error(error));
 
       setSampleProcessing(processedSample);
     } else {
@@ -63,6 +69,8 @@ export function FormData() {
       };
 
       console.log("Procesando datos desde el formulario:", processedSample);
+      console.log("Palabras clave generadas:", processedSample.keywords_generated.keywords);
+      console.log("Palabras clave generadas:", processedSample.keywords_generated.keywords.length);
 
       setSampleProcessing(processedSample);
     }
@@ -157,6 +165,7 @@ export function FormData() {
       </form>
 
       {showExcelDownloader && <ExcelDownloader />}
+
     </section>
   );
 }

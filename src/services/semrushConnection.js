@@ -1,51 +1,25 @@
-// Archivo de conexión: semrushConnection.js
-const axios = require('axios');
+const express = require('express');
+const fetch = require('node-fetch');
 
-const SEMrushConnection = {
-  endpoint: 'https://api.semrush.com/',
-  apiKey: 'API_KEY_HERE',
+const app = express();
+const port = 3001;
 
-  makeRequest: async (params) => {
-    try {
-      const response = await axios.get(SEMrushConnection.endpoint, { params });
-      if (response.status === 200) {
-        return response.data;
-      } else {
-        throw new Error(`Error: ${response.status}`);
-      }
-    } catch (error) {
-      console.error('Error en la solicitud a SEMrush:', error);
-      throw error;
-    }
-  },
-};
+app.get('/api/semrush', async (req, res) => {
+  const { database, keyword } = req.query;
+  const apiKey = '';
+  const endpoint = `https://api.semrush.com/?type=phrase_these&key=${apiKey}&phrase=${encodeURIComponent(keyword)}&export_columns=Dt,Db,Ph,Nq,Kd&database=${database}`;
 
-// Archivo de funciones: semrushFunctions.js
-const SEMrushConnection = require('./semrushConnection');
-
-const getKeywordDataForDatabases = async (keywords, databases) => {
   try {
-    for (const keyword of keywords) {
-      for (const database of databases) {
-        const params = {
-          type: 'phrase_this',
-          key: SEMrushConnection.apiKey,
-          phrase: keyword,
-          database: database,
-          export_columns: 'Ph,Nq,Cp,Co,Nr',
-        };
-
-        const databaseData = await SEMrushConnection.makeRequest(params);
-        console.log(`Resultados para la palabra clave "${keyword}" en la base de datos ${database}:`);
-        console.log(databaseData);
-      }
-    }
+    const response = await fetch(endpoint);
+    const data = await response.text();
+    res.set('Access-Control-Allow-Origin', '*'); // Permite CORS en el backend
+    res.send(data);
   } catch (error) {
-    console.error('Error al obtener los datos de las palabras clave:', error);
+    console.error(error);
+    res.status(500).send('Error al consultar la API de Semrush');
   }
-};
+});
 
-// Uso de la función
-const keywords = ['seo', 'marketing'];
-const databases = ['us', 'uk', 'ca'];
-getKeywordDataForDatabases(keywords, databases);
+app.listen(port, () => {
+  console.log(`Servidor proxy corriendo en http://localhost:${port}`);
+});
