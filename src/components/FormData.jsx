@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useData } from "@/context/DataContext";
 import { useProcessing } from "@/context/ProcessingContext";
 import { ExcelDownloader } from "@/components/ExcelDownloader";
+import axios from 'axios';
 
 export function FormData() {
   // Loading State
@@ -47,16 +48,82 @@ export function FormData() {
         audiencias: processAudiencias(excelData[4]),
         keywords_generated: await getKeywords(excelData[0], excelData[1], excelData[2], excelData[3]),
       };
+      // Ejemplo de uso
+      await setSampleProcessing(processedSample);
+      console.log(processedSample.keywords_generated.keywords);
 
-      console.log("Procesando datos desde el Excel:", processedSample);
-      console.log("Palabras clave generadas:", processedSample.keywords_generated.keywords);
-      console.log("Palabras clave generadas:", processedSample.keywords_generated.keywords.length);
-          // Ejemplo de uso
-          fetchKeywordData(['us', 'uk', 'ca'], ['seo', 'marketing', 'data'])
-          .then(results => console.log(results))
-          .catch(error => console.error(error));
+      async function fetchKeywords(databases, keywords) {
+        const proxyUrl = 'http://localhost:5001/fetch-keywords'; // URL del proxy
+        
+        const payload = {
+            databases: databases, // Reemplaza con las bases de datos que necesites
+            keywords: keywords // Reemplaza con las palabras clave que desees analizar
+        };
+    
+        try {
+            // Realizar la solicitud al proxy
+            const response = await axios.post(proxyUrl, payload);
+            console.log('Datos recibidos:', response.data);
+    
+            // Procesar y estructurar la respuesta
+            const organizedData = processResponse(response.data);
+    
+            console.log('Datos organizados:', organizedData);
+    
+            // Guardar en una variable JSON
+            const jsonData = JSON.stringify(organizedData, null, 2);
+            console.log('JSON final:', jsonData);
+    
+            return organizedData; // Devuelve los datos organizados
+    
+        } catch (error) {
+            console.error('Error al obtener datos del proxy:', error.message);
+            return null;
+        }
+    }
+    
+    // Función para organizar la respuesta
+    function processResponse(data) {
+        const organizedData = [];
+    
+        for (const [region, results] of Object.entries(data)) {
+            results.forEach((result) => {
+                const keyword = result.keyword || 'N/A';
+                const rawData = result.data || '';
+    
+                if (rawData.startsWith('ERROR')) {
+                    // Si hay un error, lo añadimos con la región y la palabra clave
+                    organizedData.push({
+                        region: region,
+                        keyword: keyword,
+                        error: rawData.trim()
+                    });
+                } else {
+                    // Si hay datos válidos, procesamos las métricas
+                    const lines = rawData.split('\r\n');
+                    if (lines.length > 1) {
+                        const headers = lines[0].split(';');
+                        const values = lines[1].split(';');
+                        const dataObject = headers.reduce((acc, header, index) => {
+                            acc[header] = values[index] || 'N/A';
+                            return acc;
+                        }, {});
+    
+                        organizedData.push({
+                            region: region,
+                            keyword: keyword,
+                            ...dataObject
+                        });
+                    }
+                }
+            });
+        }
+    
+        return organizedData;
+    }
 
-      setSampleProcessing(processedSample);
+    fetchKeywords(processedSample.audiencias, processedSample.keywords_generated.keywords)
+    
     } else {
       // Si no hay datos cargados desde el Excel, usar los datos del formulario
       const processedSample = {
@@ -67,12 +134,8 @@ export function FormData() {
         audiencias: processAudiencias(sample.audiencias),
         keywords_generated: await getKeywords(sample.keyword, sample.tema, sample.enfoque, sample.mesa),
       };
-
-      console.log("Procesando datos desde el formulario:", processedSample);
-      console.log("Palabras clave generadas:", processedSample.keywords_generated.keywords);
-      console.log("Palabras clave generadas:", processedSample.keywords_generated.keywords.length);
-
       setSampleProcessing(processedSample);
+    
     }
 
     // Mostrar el componente de descarga de Excel

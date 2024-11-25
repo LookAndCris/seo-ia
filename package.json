@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "autoprefixer": "10.4.14",
+    "axios": "^1.7.7",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.9",
     "html2canvas": "^1.4.1",
