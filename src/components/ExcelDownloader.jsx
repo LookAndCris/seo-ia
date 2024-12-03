@@ -1,26 +1,68 @@
 import * as XLSX from "xlsx";
-import { useData } from "@/context/DataContext";
+import { useProcessing } from "@/context/ProcessingContext";
 
 export function ExcelDownloader() {
   // Use Data
-  const { data, indexes, sample } = useData();
+
+  const { sampleProcessing } = useProcessing();
 
   // Function to export data to Excel
-  const exportToExcel = (ranData, headerExcel) => {
-    ranData.unshift(headerExcel);
-    const worksheet = XLSX.utils.json_to_sheet(ranData);
+  const exportToExcel = () => {
+    // Create a new workbook and a new worksheet without data
     const workbook = XLSX.utils.book_new();
+
+const data = [
+  ["FICHA CONTENIDO SEO"],
+  [],
+  ["Item del Contenido", ""],
+  ["Responsable/Autor", "Nombre del Autor"],
+  ["Categoría principal", "", "Subcategoría", "Inversión"],
+  ["Título de contenido", ""],
+  [],
+  ["Descripción del tema:"],
+  [""],
+  [],
+  ["Estadística"],
+  ["Estándar del contenido", "EU, UK, CA"],
+  [],
+  ["Keywords principales:"],
+  ["Keywords", "EU", "UK", "CA", "Total"],
+  ["", 110, 90, 30, 20, 250],
+  ["", 120, 100, 40, 30, 290],
+  ["", 50, 40, 20, 10, 120],
+  [],
+  ["Título & Metas"],
+  ["Título SEO", ""],
+  ["Meta Descripción", ""],
+  ["Título H1", ""],
+  ["URL Amigable SEO", ""],
+  [],
+  ["Buyer Persona"],
+  [""],
+  [],
+  [""],
+  [""]
+];
+
+// Convertir los datos en una hoja de trabajo
+const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+
+    // Download the Excel file
     XLSX.utils.book_append_sheet(workbook, worksheet, "Muestra");
-    XLSX.writeFile(workbook, ".muestra-aleatoria-simple.xlsx");
+    // Save the workbook
+    XLSX.writeFile(workbook, "ficha_tecnica.xlsx");
   };
 
-  // Function to handle the click event
-  // FIX TO DO: If the sample size is smaller, the function can bring double the header
+
   const handleExportClick = () => {
-    const dataRandom = indexes.map((index) => data[index - 1]);
-    exportToExcel(dataRandom, sample.headerExcel); // Call the exportToExcel function
+    exportToExcel(sampleProcessing); // Call the exportToExcel function
   };
-
+      // ranData.unshift(headerExcel);
+    // const worksheet = XLSX.utils.json_to_sheet(ranData);
+    // const workbook = XLSX.utils.book_new();
+    // XLSX.utils.book_append_sheet(workbook, worksheet, "Muestra");
+    // XLSX.writeFile(workbook, ".muestra-aleatoria-simple.xlsx");
   // Display data in the console
   return (
     <div className="flex justify-center items-center h-full">

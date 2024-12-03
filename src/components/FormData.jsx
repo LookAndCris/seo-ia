@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useData } from "@/context/DataContext";
 import { useProcessing } from "@/context/ProcessingContext";
 import { ExcelDownloader } from "@/components/ExcelDownloader";
-import axios from 'axios';
 
 export function FormData() {
   // Loading State
@@ -13,9 +12,6 @@ export function FormData() {
   const { data, saveData, sample, saveSample } = useData();
   // Use Processing
   const { sampleProcessing, setSampleProcessing, getKeywords, fetchKeywordData } = useProcessing();
-
-  // Keywords generadas
-  let keywords_real = [];
 
   // Función para procesar las audiencias vengan con espacios o comas
   const processAudiencias = (audiencias) => {
@@ -50,80 +46,12 @@ export function FormData() {
       };
       // Ejemplo de uso
       await setSampleProcessing(processedSample);
+
       console.log(processedSample.keywords_generated.keywords);
-
-      async function fetchKeywords(databases, keywords) {
-        const proxyUrl = 'http://localhost:5001/fetch-keywords'; // URL del proxy
-        
-        const payload = {
-            databases: databases, // Reemplaza con las bases de datos que necesites
-            keywords: keywords // Reemplaza con las palabras clave que desees analizar
-        };
-    
-        try {
-            // Realizar la solicitud al proxy
-            const response = await axios.post(proxyUrl, payload);
-            console.log('Datos recibidos:', response.data);
-    
-            // Procesar y estructurar la respuesta
-            const organizedData = processResponse(response.data);
-    
-            console.log('Datos organizados:', organizedData);
-    
-            // Guardar en una variable JSON
-            const jsonData = JSON.stringify(organizedData, null, 2);
-            console.log('JSON final:', jsonData);
-    
-            return organizedData; // Devuelve los datos organizados
-    
-        } catch (error) {
-            console.error('Error al obtener datos del proxy:', error.message);
-            return null;
-        }
-    }
-    
-    // Función para organizar la respuesta
-    function processResponse(data) {
-        const organizedData = [];
-    
-        for (const [region, results] of Object.entries(data)) {
-            results.forEach((result) => {
-                const keyword = result.keyword || 'N/A';
-                const rawData = result.data || '';
-    
-                if (rawData.startsWith('ERROR')) {
-                    // Si hay un error, lo añadimos con la región y la palabra clave
-                    organizedData.push({
-                        region: region,
-                        keyword: keyword,
-                        error: rawData.trim()
-                    });
-                } else {
-                    // Si hay datos válidos, procesamos las métricas
-                    const lines = rawData.split('\r\n');
-                    if (lines.length > 1) {
-                        const headers = lines[0].split(';');
-                        const values = lines[1].split(';');
-                        const dataObject = headers.reduce((acc, header, index) => {
-                            acc[header] = values[index] || 'N/A';
-                            return acc;
-                        }, {});
-    
-                        organizedData.push({
-                            region: region,
-                            keyword: keyword,
-                            ...dataObject
-                        });
-                    }
-                }
-            });
-        }
-    
-        return organizedData;
-    }
-
-    fetchKeywords(processedSample.audiencias, processedSample.keywords_generated.keywords)
-    
+      let archive_data = await fetchKeywordData(processedSample.audiencias, processedSample.keywords_generated.keywords)
+      // Guardar archive_data procesados en el contexto processedSample
+      await setSampleProcessing({ ...processedSample, archive_data: archive_data });
+      console.log(sampleProcessing);
     } else {
       // Si no hay datos cargados desde el Excel, usar los datos del formulario
       const processedSample = {
